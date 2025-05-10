@@ -114,8 +114,18 @@
             document.getElementById('error').style.display = 'none';
             document.getElementById('resultsTable').style.display = 'none';
 
-            // Make API request
-            fetch(`${API_URL}?name=${encodeURIComponent(name)}`)
+            // Define headers for the request
+            const headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+                'Cookie': 'tunnel_phishing_protection=tidy-field-6k3l0ws.usw3; .Tunnels.Relay.WebForwarding.Cookies=CfDJ8Cs4yarcs6pKkdu0hlKHsZtg_7pAp2XsTnXWU1m7-d7k_YNxoHXrBaSmtPpE-IL920Gd3isHdjvHV6gNVjObmT-cfYo23UVcnruFUBY6aJrF2BFDjk92-QLA2un2tLSntSlxYaXBsD7TDRUL-fcHPuXc9e2sTCjzT39j-D1julaMsYkNu4UgCcWFuxOvwLzRInPLbUanjCNXNPvHqIvXvS6PWasLNEqiw_nS52UfEIzv39OcSZPuaIvhu5WBl0-EbEDyMbxKa_Rr1sqRAq8s15FK9Tsobb12n6ZIUsF0e2i6Jck17ofeutvz-ZfV3W1NDKVaEkXAm_uc9XEnmA8JRxsDeG2NvPG6T3JRqzp5WymXuqoaTiK3sfT5teOe7YTr83pqh2K2qgAUcgx7b8iKtxQvE6EfE39FVjSuXHHcKEGWYQ-536W5NSt-GWYcTvBXCJ8C6n2AZBvbDffCxNNJUrg5k_nFsBac7jh82DQWiUd9qTIcfrsrBI6f3gvFOWfSabcJKJUdKN2klbeInKeHvx8XjokWjBgaL3kapjRpFIT3B5yIZjhA5HHb1MV4qKvUqljgm3MOfiqu6CsozFIHHeLw7RXkflzA4ymTRbKMWEj5NxIL8dfNdmoY8e0wvFxIyB7K1tv0M9StbvfxVuD5UhfQik0agl2pp0L1IsgZ-pBldj-UeXWJiAUZrQJsKTstdK79UP39Uyx0dSdyCzQnSz0GkSBEQlfXUeDqxXOjTNSqINUNP4_ZbEbwd8RpFAjPEqIX5t-KTj5eaQi3TpmguPkjj-1klrbV1t0OykMMUQznNyBtvHjymbO3ajCALEwSYPiegN_2bJPE2nopBI73dUTqdQIWSKNoVwkATWylpu1uIpegzAuL-Po9-hNv56XRGb8LWFLfchSmneGcJEa2C58wp_nn6aVbj-pmuml7XdZtRxXxAWG5Pm2un2mKuyDZV2Q1txIzVuF9Z9Ml8CBou9Di98IlSy3Axhou7cx3g269mBfNe0Bv8Wj5Kx6Sihi692Zo1MYCdLYBhHZWuMXA7JXEeF8XW9Gi6RYHkN_n7rbDAy1H7GrTkLRmt7wx1d02qQEWUuvr_8aL2LcRlwjRXXlBJf0raTBb3sUO7q6i0xKhrT3dtZLhHtnxj9G_ZZWzzVCkZUqOOor-yoK6p-9R6bWXFMeZLkIIrsdYjkCxsMXalEvHmXNUn-WSF8Tf0fI6Hf32mXFnBkQrA8CcG6-NlT8Y1jh9a-XNAfAnNrop2LwiCD_KzTBD9MXU4bpeQp8eLTERFCwgvhastSupI1O3eDJIgc0Uku9_OOpkyvytQR_maE0foO5TVGrkd68_hRzOBnHzP4B9CJdCEvC5TsDR3SF6iA--H9Xlpt9LC5hL402PRtvnM4moS98G0AK7Mw-1duIRYVbpyEnRFGtSO5aFvDq8Ygk3zV9G6Nn0SngwFsIAx56uw1BOdNVvlFwhNMBARuN-ZqCJ_9SWcgh_VxZkoczvminxdNOl6brqf_3WyBeD7PYWcPXI2P1PV1Y5y9lg53gU5RTIcbMYqbJe1BWZCaHem2Q8XhxUA_JHbbsuHfJhkqwNrfiUUt_1lvgEWW6ew_9u-wy2Uj-YNvaAt_ks-Gg'
+            };
+
+            // Make API request with headers
+            fetch(`${API_URL}?name=${encodeURIComponent(name)}`, {
+                method: 'GET',
+                headers: headers,
+                credentials: 'include' // Include cookies in the request
+            })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(data => {
@@ -136,7 +146,8 @@
                     document.getElementById('loading').style.display = 'none';
 
                     // Show error message
-                    showError(error.message);
+                    showError(error.message || 'Failed to connect to the server');
+                    console.error('Error:', error);
                 });
         }
 
