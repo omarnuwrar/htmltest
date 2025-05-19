@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rinet.ai | Advanced AI Solutions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>AI Call Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #3a86ff;
-            --primary-dark: #2667cc;
-            --secondary: #8338ec;
-            --accent: #ff006e;
-            --dark: #0a1128;
-            --light: #f8f9fa;
-            --gradient-1: linear-gradient(135deg, #3a86ff, #8338ec);
-            --gradient-2: linear-gradient(135deg, #ff006e, #fb5607);
-            --gradient-3: linear-gradient(135deg, #8338ec, #ff006e);
+            --primary-color: #6c63ff;
+            --secondary-color: #4a42e8;
+            --bg-dark: #0f1624;
+            --bg-darker: #080d17;
+            --text-light: #f0f0f0;
+            --text-dim: #a0a0a0;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --glow-color: rgba(108, 99, 255, 0.5);
         }
 
         * {
@@ -29,1442 +26,926 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            color: var(--dark);
-            background-color: var(--light);
+            background: linear-gradient(135deg, var(--bg-dark), var(--bg-darker));
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             overflow-x: hidden;
         }
 
-        h1, h2, h3, h4, h5 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: var(--opacity); }
         }
 
         .container {
             width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
         }
 
-        /* Header */
-        header {
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .login-container {
+            background: rgba(15, 22, 36, 0.7);
             backdrop-filter: blur(10px);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .logo span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .logo-icon {
-            margin-right: 10px;
-            font-size: 28px;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin-left: 30px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: color 0.3s;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background: var(--gradient-1);
-            transition: width 0.3s;
-        }
-
-        .nav-links a:hover::after {
+            border-radius: 1rem;
+            padding: 2rem;
             width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
         }
 
         .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--gradient-1);
-            color: white;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
             border: none;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(58, 134, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
         }
 
         .btn-secondary {
-            background: var(--gradient-2);
-            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: none;
         }
 
         .btn-secondary:hover {
-            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+            background: rgba(108, 99, 255, 0.1);
         }
 
-        .mobile-menu {
+        .call-container {
             display: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding-top: 150px;
-            padding-bottom: 100px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: var(--gradient-1);
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: var(--gradient-2);
-            opacity: 0.1;
-            z-index: -1;
-        }
-
-        .hero-content {
-            display: flex;
+            width: 100%;
+            max-width: 800px;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            gap: 40px;
+            gap: 2rem;
         }
 
-        .hero-text {
-            flex: 1;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            line-height: 1.2;
-            margin-bottom: 20px;
-        }
-
-        .hero-title span {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: #555;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .hero-image {
-            flex: 1;
+        .ai-avatar {
             position: relative;
-        }
-
-        .hero-img {
-            width: 100%;
-            max-width: 550px;
-            border-radius: 10px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            animation: particleFloat 15s infinite linear;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-            }
-        }
-
-        /* Features Section */
-        .features {
-            padding: 100px 0;
-            background-color: #f9fafc;
-            position: relative;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: var(--gradient-1);
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .section-title p {
-            color: #666;
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-1);
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s;
-        }
-
-        .feature-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 28px;
-            background: var(--gradient-1);
-            color: white;
+            box-shadow: 0 0 30px var(--glow-color);
+            overflow: hidden;
         }
 
-        .feature-card:nth-child(2n) .feature-icon {
-            background: var(--gradient-2);
+        .ai-circle {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: var(--bg-darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .feature-card:nth-child(3n) .feature-icon {
-            background: var(--gradient-3);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-
-        .feature-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* About AI Section */
-        .about-ai {
-            padding: 100px 0;
+        .ai-inner {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
             overflow: hidden;
         }
 
-        .about-ai::before {
-            content: '';
-            position: absolute;
-            top: -200px;
-            right: -200px;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: var(--gradient-3);
-            opacity: 0.05;
-            z-index: -1;
+        .ai-icon {
+            font-size: 3rem;
+            color: white;
+            z-index: 2;
         }
 
-        .about-content {
+        .pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--primary-color);
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        .wave-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 50px;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .about-image {
-            flex: 1;
-            position: relative;
+        .wave-container.active {
+            opacity: 1;
         }
 
-        .about-img {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .about-text {
-            flex: 1;
-        }
-
-        .about-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .about-text h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: var(--gradient-1);
-            bottom: -10px;
-            left: 0;
-            border-radius: 2px;
-        }
-
-        .about-text p {
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            font-size: 1.05rem;
-        }
-
-        .about-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 20px;
+        .wave {
+            width: 5px;
+            height: 40px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin: 0 2px;
+            border-radius: 5px;
+            animation: wave 1s infinite ease-in-out;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .wave:nth-child(1) { animation-delay: 0.1s; }
+        .wave:nth-child(2) { animation-delay: 0.2s; }
+        .wave:nth-child(3) { animation-delay: 0.3s; }
+        .wave:nth-child(4) { animation-delay: 0.4s; }
+        .wave:nth-child(5) { animation-delay: 0.5s; }
+        .wave:nth-child(6) { animation-delay: 0.6s; }
+        .wave:nth-child(7) { animation-delay: 0.7s; }
+
+        @keyframes wave {
+            0%, 100% { height: 20px; }
+            50% { height: 60px; }
         }
 
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 100px 0;
-            background-color: #f9fafc;
-            position: relative;
-        }
-
-        .steps {
+        .call-controls {
             display: flex;
-            justify-content: space-between;
-            margin-top: 60px;
-            position: relative;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
-        .steps::before {
-            content: '';
-            position: absolute;
-            top: 70px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-1);
-            z-index: 1;
-        }
-
-        .step {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            width: 25%;
-        }
-
-        .step-number {
+        .control-btn {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: var(--gradient-1);
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 auto 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .step:nth-child(2) .step-number {
-            background: var(--gradient-2);
-        }
-
-        .step:nth-child(3) .step-number {
-            background: var(--gradient-3);
-        }
-
-        .step:nth-child(4) .step-number {
-            background: var(--gradient-1);
-        }
-
-        .step h3 {
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
-
-        .step p {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* Testimonials */
-        .testimonials {
-            padding: 100px 0;
-            position: relative;
-        }
-
-        .testimonials::before {
-            content: '';
-            position: absolute;
-            bottom: -200px;
-            left: -200px;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: var(--gradient-2);
-            opacity: 0.05;
-            z-index: -1;
-        }
-
-        .testimonial-slider {
-            margin-top: 50px;
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            gap: 30px;
-            padding: 20px 0;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .testimonial-slider::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-        .testimonial-card {
-            flex: 0 0 auto;
-            width: calc(33.333% - 20px);
-            scroll-snap-align: start;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            position: relative;
-        }
-
-        .testimonial-card::before {
-            content: '"';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 5rem;
-            color: rgba(58, 134, 255, 0.1);
-            font-family: Georgia, serif;
-            line-height: 1;
-        }
-
-        .testimonial-text {
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .author-info h4 {
-            margin-bottom: 5px;
-        }
-
-        .author-info p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .slider-controls {
-            display: flex;
-            justify-content: center;
-            margin-top: 40px;
-            gap: 15px;
-        }
-
-        .slider-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ddd;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .slider-dot.active {
-            background: var(--primary);
-            transform: scale(1.2);
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
-        /* Pricing */
-        .pricing {
-            padding: 100px 0;
-            background-color: #f9fafc;
+        .control-btn.mute {
+            background: var(--primary-color);
         }
 
-        .pricing-plans {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 50px;
+        .control-btn.end-call {
+            background: var(--error-color);
         }
 
-        .pricing-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            flex: 1;
-            max-width: 350px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pricing-card.featured {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            border: 2px solid transparent;
-            background:
-                linear-gradient(white, white) padding-box,
-                var(--gradient-1) border-box;
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
-
-        .pricing-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .pricing-name {
+        .control-btn i {
             font-size: 1.5rem;
-            margin-bottom: 10px;
+            color: white;
         }
 
-        .pricing-price {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-
-        .pricing-card.featured .pricing-price {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .pricing-period {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .pricing-features li {
-            padding: 10px 0;
-            color: #555;
-            display: flex;
-            align-items: center;
-        }
-
-        .pricing-features li::before {
-            content: '✓';
-            color: var(--primary);
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        .pricing-card.featured .pricing-features li::before {
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .pricing-btn {
+        .conversation {
             width: 100%;
-            text-align: center;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(15, 22, 36, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .popular-tag {
-            position: absolute;
-            top: 20px;
-            right: -35px;
-            background: var(--gradient-2);
-            color: white;
-            padding: 5px 40px;
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: rgba(108, 99, 255, 0.2);
+            margin-left: auto;
+            border-top-right-radius: 0;
+        }
+
+        .ai-message {
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: auto;
+            border-top-left-radius: 0;
+        }
+
+        .message-header {
             font-size: 0.8rem;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 10px rgba(255, 0, 110, 0.3);
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
         }
 
-        /* CTA Section */
-        .cta {
-            padding: 100px 0;
-            background: var(--gradient-1);
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        .message-content {
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
-        .cta::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+        .status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
         }
 
-        .cta::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .cta p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 30px;
-            opacity: 0.9;
-        }
-
-        .cta-btn {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .cta-btn:hover {
-            background: var(--light);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 80px 0 30px;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-
-        .footer-logo {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
+        .typing-indicator {
             display: inline-block;
         }
 
-        .footer-about p {
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-link {
-            width: 40px;
-            height: 40px;
+        .typing-indicator span {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            background-color: var(--text-dim);
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0 2px;
+            animation: typing 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            background: var(--success-color);
             color: white;
-            text-decoration: none;
-            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
-        .social-link:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .footer-links h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
+        .notification.error {
+            background: var(--error-color);
         }
 
-        .footer-links h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--primary);
+        .microphone-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--error-color);
+            margin-right: 10px;
+            display: inline-block;
         }
 
-        .footer-links ul {
-            list-style: none;
+        .microphone-indicator.active {
+            background-color: var(--success-color);
+            animation: pulse-mic 1.5s infinite;
         }
 
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-
-        .footer-links a {
-            color: #aaa;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 3rem;
-            }
-
-            .pricing-plans {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .pricing-card {
-                max-width: 100%;
-                width: 100%;
-                margin-bottom: 30px;
-            }
-
-            .pricing-card.featured {
-                transform: scale(1);
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr 1fr;
-            }
+        @keyframes pulse-mic {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+            .container {
+                padding: 1rem;
             }
 
-            .mobile-menu {
-                display: block;
-            }
-
-            .hero-content {
-                flex-direction: column;
-            }
-
-            .hero-text {
-                text-align: center;
-                order: 2;
-            }
-
-            .hero-image {
-                order: 1;
-                margin-bottom: 40px;
-            }
-
-            .hero-buttons {
-                justify-content: center;
-            }
-
-            .about-content {
-                flex-direction: column;
-            }
-
-            .about-text {
-                text-align: center;
-            }
-
-            .about-text h2::after {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-
-            .steps {
-                flex-direction: column;
-                gap: 40px;
-            }
-
-            .steps::before {
-                display: none;
-            }
-
-            .step {
-                width: 100%;
-            }
-
-            .testimonial-card {
-                width: 85%;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .social-links {
-                justify-content: center;
-            }
-
-            .footer-links h3::after {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .section-title h2 {
+            .header h1 {
                 font-size: 2rem;
             }
 
-            .about-stats {
-                grid-template-columns: 1fr;
+            .ai-avatar {
+                width: 150px;
+                height: 150px;
             }
 
-            .cta h2 {
-                font-size: 2rem;
+            .ai-circle {
+                width: 135px;
+                height: 135px;
+            }
+
+            .ai-inner {
+                width: 110px;
+                height: 110px;
+            }
+
+            .call-controls {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav>
-                <a href="#" class="logo">
-                    <i class="fas fa-brain logo-icon"></i>
-                    <span>Rinet.ai</span>
-                </a>
-                <ul class="nav-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#about">About AI</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <a href="#" class="btn">Get Started</a>
-                <div class="mobile-menu">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <div class="stars"></div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">Unleash the Power of <span>Artificial Intelligence</span></h1>
-                    <p class="hero-subtitle">Rinet.ai provides cutting-edge AI solutions to transform your business. Our platform combines machine learning, natural language processing, and computer vision to deliver intelligent automation and insights.</p>
-                    <div class="hero-buttons">
-                        <a href="#" class="btn">Start Free Trial</a>
-                        <a href="#" class="btn btn-secondary">Watch Demo</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1677442135136-760c813028c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80" alt="AI Technology" class="hero-img">
-                </div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>AI Call Assistant</h1>
+            <p>Have a natural conversation with our advanced AI assistant</p>
         </div>
-        <div class="particles">
-            <!-- Particles will be added via JavaScript -->
-        </div>
-    </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Powerful AI Features</h2>
-                <p>Discover how our advanced AI capabilities can revolutionize your workflow and drive innovation</p>
+        <div class="login-container" id="loginContainer">
+            <h2>Start Your AI Call</h2>
+            <div class="input-group">
+                <input type="text" id="usernameInput" placeholder="Enter your name" required>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3>Machine Learning</h3>
-                    <p>Our advanced algorithms learn from your data to make intelligent predictions and automate complex decision-making processes.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>Natural Language Processing</h3>
-                    <p>Understand and generate human language with our sophisticated NLP models that power chatbots, content creation, and sentiment analysis.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                    <h3>Computer Vision</h3>
-                    <p>Analyze and interpret visual data with our state-of-the-art computer vision technology for image recognition and object detection.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Predictive Analytics</h3>
-                    <p>Forecast trends and outcomes with our predictive models that identify patterns in your data to guide strategic decisions.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>AI Security</h3>
-                    <p>Protect your systems with AI-powered security that detects and responds to threats in real-time with unprecedented accuracy.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <h3>Automated Workflows</h3>
-                    <p>Streamline operations with intelligent automation that handles repetitive tasks and optimizes complex processes.</p>
-                </div>
-            </div>
+            <button class="btn" id="startCallBtn">Start Call</button>
         </div>
-    </section>
 
-    <!-- About AI Section -->
-    <section class="about-ai" id="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80" alt="AI Technology" class="about-img">
-                </div>
-                <div class="about-text">
-                    <h2>The Future of AI is Here</h2>
-                    <p>Artificial Intelligence is transforming industries across the globe. At Rinet.ai, we're at the forefront of this revolution, developing cutting-edge AI solutions that solve real-world problems and create new opportunities.</p>
-                    <p>Our team of AI experts and data scientists work tirelessly to push the boundaries of what's possible, creating intelligent systems that learn, adapt, and improve over time.</p>
-                    <p>Whether you're looking to automate processes, gain deeper insights from your data, or create entirely new AI-powered products, Rinet.ai provides the tools and expertise you need to succeed in the AI-driven future.</p>
-                    <div class="about-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">98%</div>
-                            <div class="stat-label">Accuracy Rate</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">500+</div>
-                            <div class="stat-label">AI Models</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">10x</div>
-                            <div class="stat-label">Efficiency Boost</div>
+        <div class="call-container" id="callContainer">
+            <div class="ai-avatar">
+                <div class="ai-circle">
+                    <div class="pulse"></div>
+                    <div class="ai-inner">
+                        <i class="fas fa-robot ai-icon"></i>
+                        <div class="wave-container" id="waveContainer">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- How It Works Section -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-title">
-                <h2>How Rinet.ai Works</h2>
-                <p>Our streamlined process makes implementing AI solutions simple and effective</p>
+            <div class="status">
+                <span class="microphone-indicator" id="micIndicator"></span>
+                <span id="statusText">Ready to start conversation</span>
             </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Connect Data</h3>
-                    <p>Easily integrate your existing data sources with our secure API connections and data pipelines.</p>
+
+            <div class="call-controls">
+                <div class="control-btn" id="muteBtn" title="Mute/Unmute">
+                    <i class="fas fa-microphone"></i>
                 </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Train Models</h3>
-                    <p>Our platform automatically trains and optimizes AI models specifically for your unique needs.</p>
+                <div class="control-btn end-call" id="endCallBtn" title="End Call">
+                    <i class="fas fa-phone-slash"></i>
                 </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Deploy Solutions</h3>
-                    <p>Implement your AI solutions with one-click deployment to any environment or platform.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Monitor & Improve</h3>
-                    <p>Continuously track performance and refine your AI models for ever-improving results.</p>
-                </div>
+            </div>
+
+            <div class="conversation" id="conversation">
+                <!-- Messages will be added here dynamically -->
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-        <div class="container">
-            <div class="section-title">
-                <h2>What Our Clients Say</h2>
-                <p>Hear from businesses that have transformed their operations with Rinet.ai</p>
-            </div>
-            <div class="testimonial-slider">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">Implementing Rinet.ai's machine learning solutions has completely transformed our customer service operations. We've reduced response times by 60% while improving customer satisfaction scores.</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Sarah Johnson" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Sarah Johnson</h4>
-                            <p>CTO, TechGlobal</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-text">The predictive analytics platform from Rinet.ai has given us insights we never thought possible. We can now forecast market trends with remarkable accuracy, giving us a significant competitive advantage.</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Chen" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Michael Chen</h4>
-                            <p>Data Director, FinanceHub</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-text">Rinet.ai's computer vision technology has revolutionized our quality control process. We've reduced defects by 85% and increased production efficiency across all our manufacturing plants.</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Elena Rodriguez" class="author-avatar">
-                        <div class="author-info">
-                            <h4>Elena Rodriguez</h4>
-                            <p>Operations Manager, IndustryCorp</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-text">The NLP capabilities of Rinet.ai have transformed how we analyze customer feedback. We now have a deep understanding of customer sentiment that drives our product development strategy.</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="James Wilson" class="author-avatar">
-                        <div class="author-info">
-                            <h4>James Wilson</h4>
-                            <p>Product Director, ConsumerBrands</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="slider-controls">
-                <div class="slider-dot active"></div>
-                <div class="slider-dot"></div>
-                <div class="slider-dot"></div>
-                <div class="slider-dot"></div>
-            </div>
-        </div>
-    </section>
+    <div class="notification" id="notification">
+        Notification message
+    </div>
 
-    <!-- Pricing Section -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <div class="section-title">
-                <h2>Simple, Transparent Pricing</h2>
-                <p>Choose the plan that fits your needs and scale as you grow</p>
-            </div>
-            <div class="pricing-plans">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name">Starter</h3>
-                        <div class="pricing-price">$99</div>
-                        <div class="pricing-period">per month</div>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>5 AI Models</li>
-                        <li>100,000 API Calls</li>
-                        <li>Basic Analytics</li>
-                        <li>Email Support</li>
-                        <li>1 User Account</li>
-                    </ul>
-                    <a href="#" class="btn pricing-btn">Get Started</a>
-                </div>
-                <div class="pricing-card featured">
-                    <div class="popular-tag">Most Popular</div>
-                    <div class="pricing-header">
-                        <h3 class="pricing-name">Professional</h3>
-                        <div class="pricing-price">$299</div>
-                        <div class="pricing-period">per month</div>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>25 AI Models</li>
-                        <li>1,000,000 API Calls</li>
-                        <li>Advanced Analytics</li>
-                        <li>Priority Support</li>
-                        <li>5 User Accounts</li>
-                        <li>Custom Integrations</li>
-                    </ul>
-                    <a href="#" class="btn pricing-btn">Get Started</a>
-                </div>
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <h3 class="pricing-name">Enterprise</h3>
-                        <div class="pricing-price">$999</div>
-                        <div class="pricing-period">per month</div>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>Unlimited AI Models</li>
-                        <li>10,000,000 API Calls</li>
-                        <li>Enterprise Analytics</li>
-                        <li>24/7 Dedicated Support</li>
-                        <li>Unlimited User Accounts</li>
-                        <li>Custom Development</li>
-                        <li>SLA Guarantees</li>
-                    </ul>
-                    <a href="#" class="btn pricing-btn">Contact Sales</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta">
-        <div class="container">
-            <h2>Ready to Transform Your Business with AI?</h2>
-            <p>Join thousands of companies using Rinet.ai to drive innovation and stay ahead of the competition.</p>
-            <a href="#" class="btn cta-btn">Start Your Free Trial</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-about">
-                    <a href="#" class="footer-logo">
-                        <i class="fas fa-brain logo-icon"></i>
-                        Rinet.ai
-                    </a>
-                    <p>Empowering businesses with cutting-edge artificial intelligence solutions that drive growth, efficiency, and innovation.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="footer-links">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Press</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API Reference</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Community</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li><a href="mailto:info@rinet.ai">info@rinet.ai</a></li>
-                        <li><a href="tel:+1234567890">+1 (234) 567-890</a></li>
-                        <li><a href="#">Support Center</a></li>
-                        <li><a href="#">Partner Program</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 Rinet.ai. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript -->
     <script>
-        // Create particles
-        document.addEventListener('DOMContentLoaded', function() {
-            const particlesContainer = document.querySelector('.particles');
-            const colors = ['#3a86ff', '#8338ec', '#ff006e', '#fb5607'];
+        // Create stars background
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const starCount = 150;
 
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
 
-                // Random properties
-                const size = Math.random() * 15 + 5;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const left = Math.random() * 100;
-                const delay = Math.random() * 5;
-                const duration = Math.random() * 10 + 10;
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
 
-                // Apply styles
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.backgroundColor = color;
-                particle.style.left = `${left}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.opacity = Math.random() * 0.5 + 0.1;
-                particle.style.animationDelay = `${delay}s`;
-                particle.style.animationDuration = `${duration}s`;
+                // Random size
+                const size = Math.random() * 2;
 
-                particlesContainer.appendChild(particle);
+                // Random opacity and duration for twinkling
+                const opacity = Math.random() * 0.8 + 0.2;
+                const duration = Math.random() * 5 + 3;
+
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--opacity', opacity);
+                star.style.setProperty('--duration', `${duration}s`);
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // DOM elements
+        const loginContainer = document.getElementById('loginContainer');
+        const callContainer = document.getElementById('callContainer');
+        const usernameInput = document.getElementById('usernameInput');
+        const startCallBtn = document.getElementById('startCallBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const waveContainer = document.getElementById('waveContainer');
+        const conversation = document.getElementById('conversation');
+        const notification = document.getElementById('notification');
+        const statusText = document.getElementById('statusText');
+        const micIndicator = document.getElementById('micIndicator');
+
+        // Global variables
+        let username = '';
+        let audioContext;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let isMuted = false;
+        let currentAudio = null;
+        let silenceTimeout = null;
+        let silenceDetectionInterval = null;
+        let audioAnalyser = null;
+        let audioDataArray = null;
+
+        // Initialize the app
+        createStars();
+
+        // Event listeners
+        startCallBtn.addEventListener('click', startCall);
+        endCallBtn.addEventListener('click', endCall);
+        muteBtn.addEventListener('click', toggleMute);
+
+        // Functions
+        function startCall() {
+            username = usernameInput.value.trim();
+            if (!username) {
+                showNotification('Please enter your name', true);
+                return;
             }
 
-            // Testimonial slider
-            const dots = document.querySelectorAll('.slider-dot');
-            const slider = document.querySelector('.testimonial-slider');
+            // Request microphone access
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    setupAudioProcessing(stream);
 
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    // Update active dot
-                    document.querySelector('.slider-dot.active').classList.remove('active');
-                    dot.classList.add('active');
+                    // Start the session with the server
+                    fetch('https://corvo-ai-back-end.hf.space/api/start-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Switch to call view
+                            loginContainer.style.display = 'none';
+                            callContainer.style.display = 'flex';
 
-                    // Scroll to the corresponding testimonial
-                    const testimonials = document.querySelectorAll('.testimonial-card');
-                    const testimonialWidth = testimonials[0].offsetWidth + 30; // width + gap
-                    slider.scrollTo({
-                        left: testimonialWidth * index,
-                        behavior: 'smooth'
-                    });
-                });
-            });
+                            // Add initial AI message
+                            addMessage('AI Assistant', data.ai_response, 'ai');
 
-            // Mobile menu toggle
-            const mobileMenuBtn = document.querySelector('.mobile-menu');
-            const navLinks = document.querySelector('.nav-links');
+                            // Play the AI response
+                            playAudioFromBase64(data.audio);
 
-            mobileMenuBtn.addEventListener('click', () => {
-                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-            });
-
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-
-                        // Close mobile menu if open
-                        if (navLinks.style.display === 'flex') {
-                            navLinks.style.display = 'none';
+                            // Start listening after AI finishes speaking
+                            startListening();
+                        } else {
+                            showNotification(data.error || 'Failed to start session', true);
                         }
-                    }
+                    })
+                    .catch(error => {
+                        console.error('Error starting session:', error);
+                        showNotification('Failed to connect to server', true);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error accessing microphone:', error);
+                    showNotification('Microphone access denied', true);
                 });
+        }
+
+        function setupAudioProcessing(stream) {
+            // Set up audio context for processing
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaStreamSource(stream);
+            audioAnalyser = audioContext.createAnalyser();
+            audioAnalyser.fftSize = 256;
+            source.connect(audioAnalyser);
+
+            audioDataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+
+            // Set up media recorder
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                sendAudioToServer(audioBlob);
+                audioChunks = [];
+            };
+        }
+
+        function startListening() {
+            if (isMuted) return;
+
+            isRecording = true;
+            audioChunks = [];
+            statusText.textContent = 'Listening...';
+            micIndicator.classList.add('active');
+
+            // Start recording
+            mediaRecorder.start();
+
+            // Set up silence detection
+            silenceDetectionInterval = setInterval(detectSilence, 100);
+        }
+
+        function stopListening() {
+            if (!isRecording) return;
+
+            isRecording = false;
+            statusText.textContent = 'Processing...';
+            micIndicator.classList.remove('active');
+
+            // Clear silence detection
+            clearInterval(silenceDetectionInterval);
+            clearTimeout(silenceTimeout);
+
+            // Stop recording
+            mediaRecorder.stop();
+        }
+
+        function detectSilence() {
+            audioAnalyser.getByteFrequencyData(audioDataArray);
+
+            // Calculate average volume
+            let sum = 0;
+            for (let i = 0; i < audioDataArray.length; i++) {
+                sum += audioDataArray[i];
+            }
+            const average = sum / audioDataArray.length;
+
+            // If sound is detected, reset the silence timeout
+            if (average > 10) {
+                clearTimeout(silenceTimeout);
+                silenceTimeout = setTimeout(stopListening, 2000); // Stop after 2 seconds of silence
+            } else if (!silenceTimeout) {
+                silenceTimeout = setTimeout(stopListening, 2000);
+            }
+        }
+
+        function sendAudioToServer(audioBlob) {
+            const formData = new FormData();
+            formData.append('audio', audioBlob);
+
+            fetch('https://corvo-ai-back-end.hf.space/api/send-audio', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add user message
+                    addMessage(username, data.transcription, 'user');
+
+                    // Add AI response
+                    addMessage('AI Assistant', data.ai_response, 'ai');
+
+                    // Play the AI response
+                    playAudioFromBase64(data.audio);
+                } else {
+                    showNotification(data.error || 'Failed to process audio', true);
+                    startListening(); // Resume listening
+                }
+            })
+            .catch(error => {
+                console.error('Error sending audio:', error);
+                showNotification('Failed to send audio to server', true);
+                startListening(); // Resume listening
             });
-        });
+        }
+
+        function sendTextToServer(text) {
+            fetch('https://corvo-ai-back-end.hf.space/api/send-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add AI response
+                    addMessage('AI Assistant', data.ai_response, 'ai');
+
+                    // Play the AI response
+                    playAudioFromBase64(data.audio);
+                } else {
+                    showNotification(data.error || 'Failed to process text', true);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending text:', error);
+                showNotification('Failed to send text to server', true);
+            });
+        }
+
+        function playAudioFromBase64(base64Audio) {
+            if (!base64Audio) {
+                console.error('No audio data received');
+                startListening();
+                return;
+            }
+
+            // Stop current audio if playing
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            // Show audio waves
+            waveContainer.classList.add('active');
+            statusText.textContent = 'AI is speaking...';
+
+            // Convert base64 to blob
+            const byteCharacters = atob(base64Audio);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const audioBlob = new Blob([byteArray], { type: 'audio/mp3' });
+
+            // Create audio element
+            const audio = new Audio(URL.createObjectURL(audioBlob));
+            currentAudio = audio;
+
+            // Play audio
+            audio.play();
+
+            // Listen for audio end
+            audio.onended = () => {
+                waveContainer.classList.remove('active');
+                startListening();
+            };
+
+            // Listen for user interruption
+            document.addEventListener('click', interruptSpeaking);
+        }
+
+        function interruptSpeaking() {
+            if (currentAudio && !isRecording) {
+                // Stop the AI from speaking
+                currentAudio.pause();
+                currentAudio = null;
+                waveContainer.classList.remove('active');
+
+                // Notify the server about the interruption
+                fetch('https://corvo-ai-back-end.hf.space/api/interrupt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({}),
+                })
+                .then(() => {
+                    startListening();
+                })
+                .catch(error => {
+                    console.error('Error interrupting:', error);
+                    startListening();
+                });
+
+                // Remove the event listener
+                document.removeEventListener('click', interruptSpeaking);
+            }
+        }
+
+        function addMessage(sender, content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(type === 'user' ? 'user-message' : 'ai-message');
+
+            const headerDiv = document.createElement('div');
+            headerDiv.classList.add('message-header');
+            headerDiv.textContent = sender;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            contentDiv.textContent = content;
+
+            messageDiv.appendChild(headerDiv);
+            messageDiv.appendChild(contentDiv);
+
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+
+            if (isMuted) {
+                muteBtn.querySelector('i').classList.remove('fa-microphone');
+                muteBtn.querySelector('i').classList.add('fa-microphone-slash');
+                muteBtn.classList.add('mute');
+
+                if (isRecording) {
+                    stopListening();
+                }
+
+                statusText.textContent = 'Microphone muted';
+                micIndicator.classList.remove('active');
+            } else {
+                muteBtn.querySelector('i').classList.remove('fa-microphone-slash');
+                muteBtn.querySelector('i').classList.add('fa-microphone');
+                muteBtn.classList.remove('mute');
+
+                startListening();
+            }
+        }
+
+        function endCall() {
+            // Stop recording if active
+            if (isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+
+            // Stop current audio if playing
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            // Clear intervals and timeouts
+            clearInterval(silenceDetectionInterval);
+            clearTimeout(silenceTimeout);
+
+            // End the session with the server
+            fetch('https://corvo-ai-back-end.hf.space/api/end-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(() => {
+                // Switch back to login view
+                callContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+
+                // Reset UI
+                conversation.innerHTML = '';
+                waveContainer.classList.remove('active');
+                statusText.textContent = 'Ready to start conversation';
+                micIndicator.classList.remove('active');
+
+                // Reset variables
+                username = '';
+                usernameInput.value = '';
+                isMuted = false;
+                muteBtn.querySelector('i').classList.remove('fa-microphone-slash');
+                muteBtn.querySelector('i').classList.add('fa-microphone');
+                muteBtn.classList.remove('mute');
+
+                showNotification('Call ended');
+            })
+            .catch(error => {
+                console.error('Error ending session:', error);
+                showNotification('Failed to end session properly', true);
+            });
+        }
+
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.toggle('error', isError);
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
     </script>
 </body>
 </html>
