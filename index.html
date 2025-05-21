@@ -1,93 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RINET AI</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-        header {
-            background-color: #4285f4;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-        }
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        .hero p {
-            font-size: 1.2rem;
-            color: #666;
-            max-width: 800px;
-            margin: 0 auto 30px;
-        }
-        .cta-buttons {
-            margin-top: 30px;
-        }
-        .cta-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background-color: #4285f4;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: background-color 0.3s;
-        }
-        .cta-button:hover {
-            background-color: #3367d6;
-        }
-        .cta-button.secondary {
-            background-color: white;
-            color: #4285f4;
-            border: 2px solid #4285f4;
-        }
-        .cta-button.secondary:hover {
-            background-color: #f0f7ff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RINET AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    nav { background: #333; padding: 15px; text-align: center; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; }
+    .page { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
+    input, button { display: block; width: 100%; padding: 10px; margin: 10px 0; }
+    button { background: #4285f4; color: white; border: none; cursor: pointer; }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>RINET AI</h1>
-    </header>
-    <nav>
-        <a href="https://app.rinet.ai">Home</a>
-        <a href="#">Features</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-    </nav>
-    <div class="hero">
-        <h1>Welcome to RINET AI</h1>
-        <p>A powerful artificial intelligence platform designed to help you solve complex problems and make smarter decisions.</p>
-        <div class="cta-buttons">
-            <a href="https://corvo-ai-back-end-test.hf.space/login" class="cta-button">Login</a>
-            <a href="https://corvo-ai-back-end-test.hf.space/signup" class="cta-button secondary">Sign Up</a>
-        </div>
-    </div>
+  <nav>
+    <a href="/" onclick="route('/'); return false;">Home</a>
+    <a href="/login" onclick="route('/login'); return false;">Login</a>
+    <a href="/signup" onclick="route('/signup'); return false;">Sign Up</a>
+  </nav>
+
+  <div id="home" class="page">
+    <h1>Welcome to RINET AI</h1>
+    <p>This is the homepage of our amazing platform.</p>
+    <button onclick="route('/login')">Login</button>
+    <button onclick="route('/signup')">Sign Up</button>
+  </div>
+
+  <div id="login" class="page">
+    <h1>Login</h1>
+    <form id="loginForm" onsubmit="submitLogin(event)">
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="/signup" onclick="route('/signup'); return false;">Sign Up</a></p>
+  </div>
+
+  <div id="signup" class="page">
+    <h1>Sign Up</h1>
+    <form id="signupForm" onsubmit="submitSignup(event)">
+      <input type="text" placeholder="Full Name" required>
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit">Create Account</button>
+    </form>
+    <p>Already have an account? <a href="/login" onclick="route('/login'); return false;">Login</a></p>
+  </div>
+
+  <script>
+    // Handle routing
+    function route(path) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+
+      // Show the appropriate page
+      let pageId;
+      switch(path) {
+        case '/login': pageId = 'login'; break;
+        case '/signup': pageId = 'signup'; break;
+        default: pageId = 'home';
+      }
+      document.getElementById(pageId).style.display = 'block';
+
+      // Update URL without a page reload
+      history.pushState(null, null, path);
+    }
+
+    // Form submission handlers
+    function submitLogin(event) {
+      event.preventDefault();
+      fetch('https://corvo-ai-back-end-test.hf.space/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: event.target.elements[0].value,
+          password: event.target.elements[1].value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('Login successful!');
+          route('/');
+        } else {
+          alert('Login failed: ' + data.message);
+        }
+      });
+    }
+
+    function submitSignup(event) {
+      event.preventDefault();
+      fetch('https://corvo-ai-back-end-test.hf.space/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: event.target.elements[0].value,
+          email: event.target.elements[1].value,
+          password: event.target.elements[2].value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('Account created!');
+          route('/login');
+        } else {
+          alert('Signup failed: ' + data.message);
+        }
+      });
+    }
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', () => {
+      route(window.location.pathname);
+    });
+
+    // Initial page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if we were redirected from 404.html
+      const redirectPath = sessionStorage.getItem('redirectPath');
+      if (redirectPath) {
+        sessionStorage.removeItem('redirectPath');
+        route(redirectPath);
+      } else {
+        route(window.location.pathname);
+      }
+    });
+  </script>
 </body>
 </html>
