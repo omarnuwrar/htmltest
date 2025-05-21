@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Call Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>RINET-23FX Voice Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #6c63ff;
-            --secondary-color: #4a42e8;
-            --bg-dark: #0f1624;
-            --bg-darker: #080d17;
-            --text-light: #f0f0f0;
-            --text-dim: #a0a0a0;
-            --success-color: #4caf50;
-            --error-color: #f44336;
-            --glow-color: rgba(108, 99, 255, 0.5);
+            --primary-color: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #6366f1;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --blur-effect: blur(20px);
+            --glow-color: rgba(99, 102, 241, 0.5);
         }
 
         * {
@@ -25,25 +30,31 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark), var(--bg-darker));
-            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-darker);
+            color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             overflow-x: hidden;
         }
 
-        .stars {
+        /* Background Effects */
+        .bg-animation {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 2s ease;
         }
 
         .star {
@@ -54,353 +65,665 @@
             opacity: 0;
         }
 
+        .daytime {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4c669f, #3b5998, #192f6a);
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .cloud {
+            position: absolute;
+            width: var(--width);
+            height: var(--height);
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            filter: blur(var(--blur));
+            animation: floatCloud var(--duration) infinite linear;
+            opacity: 0.6;
+        }
+
         @keyframes twinkle {
             0%, 100% { opacity: 0; }
             50% { opacity: var(--opacity); }
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
+        @keyframes floatCloud {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(calc(100vw + 100px)); }
+        }
+
+        /* Container and Layout */
+        .app-container {
+            max-width: 1440px;
+            margin: 0 auto;
             padding: 2rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            min-height: 100vh;
         }
 
-        .header {
+        header {
             text-align: center;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 1rem;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 1rem;
+            position: relative;
+        }
+
+        .logo-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            animation: rotateLogo 10s linear infinite;
+        }
+
+        .logo-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            background: var(--bg-darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-light);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        @keyframes rotateLogo {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            background: linear-gradient(to right, var(--primary-light), var(--accent-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             text-shadow: 0 0 15px var(--glow-color);
         }
 
-        .header p {
-            color: var(--text-dim);
-            font-size: 1.1rem;
+        .tagline {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
         }
 
-        .login-container {
-            background: rgba(15, 22, 36, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
         }
 
-        .login-container h2 {
-            margin-bottom: 1.5rem;
+        /* Login Screen */
+        .login-screen {
+            width: 100%;
+            max-width: 550px;
+            padding: 2.5rem;
+            background: var(--card-bg);
+            backdrop-filter: var(--blur-effect);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .welcome-img {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            object-fit: cover;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-title {
             font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
         }
 
         .input-group {
             margin-bottom: 1.5rem;
         }
 
-        .input-group input {
+        .input-field {
             width: 100%;
-            padding: 1rem;
-            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
+            border-radius: 0.75rem;
+            color: var(--text-primary);
             font-size: 1rem;
             transition: all 0.3s ease;
+            outline: none;
         }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+        .input-field:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            border: none;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            background: var(--primary-color);
             color: white;
-            font-size: 1rem;
             font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
         }
 
-        .btn:active {
-            transform: translateY(1px);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
         }
 
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            box-shadow: none;
+        .btn-icon {
+            margin-left: 0.5rem;
         }
 
-        .btn-secondary:hover {
-            background: rgba(108, 99, 255, 0.1);
+        .feature-list {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .call-container {
+        .feature-item {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* AI Interface */
+        .ai-interface {
             display: none;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             flex-direction: column;
             align-items: center;
-            gap: 2rem;
+            z-index: 10;
         }
 
-        .ai-avatar {
+        /* AI Avatar */
+        .ai-avatar-container {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 2rem;
+        }
+
+        .ai-avatar-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary-color), rgba(99, 102, 241, 0.2));
+            animation: rotateOuter 15s linear infinite;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 30px var(--glow-color);
-            overflow: hidden;
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
         }
 
-        .ai-circle {
-            position: absolute;
-            width: 180px;
-            height: 180px;
+        .ai-avatar-mid {
+            width: 85%;
+            height: 85%;
             border-radius: 50%;
             background: var(--bg-darker);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        .ai-inner {
-            width: 150px;
-            height: 150px;
+        .ai-avatar-inner {
+            width: 75%;
+            height: 75%;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: rgba(15, 23, 42, 0.8);
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .water-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+            opacity: 0.8;
+            filter: blur(8px);
+            transform-origin: center;
+            animation: waterPulse 5s infinite alternate;
+        }
+
+        .ai-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background: var(--bg-darker);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+            z-index: 2;
             overflow: hidden;
         }
 
         .ai-icon {
             font-size: 3rem;
-            color: white;
-            z-index: 2;
+            color: var(--primary-light);
+            z-index: 3;
         }
 
-        .pulse {
+        .ai-glow {
             position: absolute;
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: var(--primary-color);
-            opacity: 0.3;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(0.95);
-                opacity: 0.7;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(0.95);
-                opacity: 0.7;
-            }
-        }
-
-        .wave-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.8), transparent 70%);
             opacity: 0;
             transition: opacity 0.5s ease;
         }
 
-        .wave-container.active {
+        .ai-glow.active {
+            opacity: 1;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .alien-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .alien-effect.active {
             opacity: 1;
         }
 
-        .wave {
-            width: 5px;
-            height: 40px;
+        .alien-particle {
+            position: absolute;
+            width: var(--size);
+            height: var(--size);
+            background: var(--primary-light);
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0;
+            animation: alienParticle var(--duration) infinite ease-out;
+            animation-delay: var(--delay);
+            transform-origin: center;
+        }
+
+        .audio-waves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60%;
+            height: 60%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .audio-waves.active {
+            opacity: 1;
+            z-index: 4;
+        }
+
+        .wave-bar {
+            width: 4px;
+            height: 30px;
             background: white;
-            margin: 0 2px;
+            margin: 0 3px;
             border-radius: 5px;
-            animation: wave 1s infinite ease-in-out;
+            animation: waveAnimation 1s infinite ease-in-out alternate;
+            animation-delay: calc(var(--i) * 0.1s);
+            transform-origin: bottom;
         }
 
-        .wave:nth-child(1) { animation-delay: 0.1s; }
-        .wave:nth-child(2) { animation-delay: 0.2s; }
-        .wave:nth-child(3) { animation-delay: 0.3s; }
-        .wave:nth-child(4) { animation-delay: 0.4s; }
-        .wave:nth-child(5) { animation-delay: 0.5s; }
-        .wave:nth-child(6) { animation-delay: 0.6s; }
-        .wave:nth-child(7) { animation-delay: 0.7s; }
-
-        @keyframes wave {
-            0%, 100% { height: 20px; }
-            50% { height: 60px; }
+        /* Controls Section */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 2rem;
         }
 
-        .call-controls {
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 2rem;
+            backdrop-filter: var(--blur-effect);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .mic-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--danger-color);
+            margin-right: 0.75rem;
+        }
+
+        .mic-status.active {
+            background-color: var(--accent-color);
+            animation: blink 1.5s infinite;
+        }
+
+        .status-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .control-buttons {
             display: flex;
             gap: 1rem;
-            margin-top: 1rem;
+            margin: 1rem 0;
         }
 
         .control-btn {
             width: 60px;
             height: 60px;
             border-radius: 50%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .control-btn.mute {
-            background: var(--primary-color);
-        }
-
-        .control-btn.end-call {
-            background: var(--error-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .control-btn i {
             font-size: 1.5rem;
-            color: white;
+            color: var(--text-primary);
         }
 
-        .conversation {
+        .control-btn.mute-btn {
+            background: var(--primary-color);
+        }
+
+        .control-btn.mute-btn.active {
+            background: var(--danger-color);
+        }
+
+        .control-btn.end-btn {
+            background: var(--danger-color);
+        }
+
+        .control-btn.end-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* Conversation Section */
+        .conversation-section {
             width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-            background: rgba(15, 22, 36, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            backdrop-filter: var(--blur-effect);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 400px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .conversation-header {
             padding: 1.5rem;
-            margin-top: 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .conversation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .conversation-title i {
+            margin-right: 0.75rem;
+            color: var(--primary-light);
+        }
+
+        .conversation-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .conversation-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            max-height: 300px;
         }
 
         .message {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            max-width: 80%;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
         }
 
-        .user-message {
-            background: rgba(108, 99, 255, 0.2);
-            margin-left: auto;
-            border-top-right-radius: 0;
-        }
-
-        .ai-message {
-            background: rgba(255, 255, 255, 0.1);
-            margin-right: auto;
-            border-top-left-radius: 0;
-        }
-
-        .message-header {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 0.5rem;
+        .message:last-child {
+            margin-bottom: 0;
         }
 
         .message-content {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
             font-size: 1rem;
             line-height: 1.5;
+            position: relative;
         }
 
-        .status {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-dim);
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .message-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .ai-message .message-avatar {
+            background: var(--primary-light);
+        }
+
+        .user-message {
+            margin-left: auto;
+        }
+
+        .user-message .message-content {
+            background: rgba(99, 102, 241, 0.15);
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+            color: var(--text-primary);
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .ai-message .message-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 4px;
+            color: var(--text-primary);
         }
 
         .typing-indicator {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 0.5rem;
         }
 
-        .typing-indicator span {
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            background-color: var(--text-dim);
+        .typing-dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
+            background: var(--text-secondary);
             margin: 0 2px;
-            animation: typing 1.4s infinite both;
+            animation: typing 1.4s infinite ease-in-out both;
         }
 
-        .typing-indicator span:nth-child(2) {
+        .typing-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .typing-indicator span:nth-child(3) {
+        .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
 
-        @keyframes typing {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
-        }
-
+        /* Notification */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem 2rem;
-            border-radius: 0.5rem;
-            background: var(--success-color);
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            background: var(--accent-color);
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: translateX(200%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             z-index: 1000;
+            display: flex;
+            align-items: center;
         }
 
         .notification.show {
@@ -408,166 +731,337 @@
         }
 
         .notification.error {
-            background: var(--error-color);
+            background: var(--danger-color);
         }
 
-        .microphone-indicator {
-            width: 15px;
-            height: 15px;
+        .notification i {
+            margin-right: 0.75rem;
+        }
+
+        /* Intro Animation */
+        .intro-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-darker);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .intro-logo {
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+
+        .intro-logo-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            background-color: var(--error-color);
-            margin-right: 10px;
-            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            animation: introLogo 2s ease forwards;
+            opacity: 0;
         }
 
-        .microphone-indicator.active {
-            background-color: var(--success-color);
-            animation: pulse-mic 1.5s infinite;
+        .intro-logo-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0;
+            animation: introText 2s 0.5s ease forwards;
         }
 
-        @keyframes pulse-mic {
+        /* Animations */
+        @keyframes rotateOuter {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes waterPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+
+        @keyframes alienParticle {
+            0% {
+                transform: scale(0) translateY(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1) translateY(calc(-1 * var(--distance)));
+                opacity: 0;
+            }
+        }
+
+        @keyframes waveAnimation {
+            0% { transform: scaleY(0.2); }
+            100% { transform: scaleY(1); }
+        }
+
+        @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.6; }
         }
 
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes introLogo {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes introText {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* Media Queries */
         @media (max-width: 768px) {
-            .container {
+            .app-container {
                 padding: 1rem;
             }
 
-            .header h1 {
-                font-size: 2rem;
+            .brand-name {
+                font-size: 1.8rem;
             }
 
-            .ai-avatar {
-                width: 150px;
-                height: 150px;
+            .tagline {
+                font-size: 1rem;
             }
 
-            .ai-circle {
-                width: 135px;
-                height: 135px;
+            .login-screen {
+                padding: 1.5rem;
             }
 
-            .ai-inner {
-                width: 110px;
-                height: 110px;
+            .welcome-img {
+                width: 120px;
+                height: 120px;
             }
 
-            .call-controls {
+            .feature-list {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .feature-item {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .ai-avatar-container {
+                width: 220px;
+                height: 220px;
+            }
+
+            .conversation-content {
+                padding: 1rem;
+            }
+
+            .control-buttons {
                 flex-wrap: wrap;
                 justify-content: center;
             }
         }
+
+        @media (max-width: 480px) {
+            .ai-avatar-container {
+                width: 180px;
+                height: 180px;
+            }
+
+            .conversation-header {
+                padding: 1rem;
+            }
+
+            .conversation-title {
+                font-size: 1rem;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+            }
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="stars"></div>
-
-    <div class="container">
-        <div class="header">
-            <h1>AI Call Assistant</h1>
-            <p>Have a natural conversation with our advanced AI assistant</p>
+    <!-- Intro Animation - Sony Style -->
+    <div class="intro-animation" id="introAnimation">
+        <div class="intro-logo">
+            <div class="intro-logo-circle"></div>
+            <div class="intro-logo-text">RINET-23FX</div>
         </div>
+    </div>
 
-        <div class="login-container" id="loginContainer">
-            <h2>Start Your AI Call</h2>
-            <div class="input-group">
-                <input type="text" id="usernameInput" placeholder="Enter your name" required>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="stars" id="starsBackground"></div>
+        <div class="daytime" id="daytimeBackground"></div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="brand">
+                <div class="logo">
+                    <div class="logo-circle"></div>
+                    <div class="logo-inner">RINET</div>
+                </div>
+                <h1 class="brand-name">RINET-23FX</h1>
             </div>
-            <button class="btn" id="startCallBtn">Start Call</button>
-        </div>
+            <p class="tagline">Advanced Neural Voice Intelligence</p>
+        </header>
 
-        <div class="call-container" id="callContainer">
-            <div class="ai-avatar">
-                <div class="ai-circle">
-                    <div class="pulse"></div>
-                    <div class="ai-inner">
-                        <i class="fas fa-robot ai-icon"></i>
-                        <div class="wave-container" id="waveContainer">
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                            <div class="wave"></div>
-                        </div>
+        <main class="main-content">
+            <!-- Login Screen -->
+            <div class="login-screen" id="loginScreen">
+                <img src="https://i.imgur.com/bFY3oDB.jpg" class="welcome-img" alt="AI Welcome">
+                <h2 class="login-title">Begin Your AI Experience</h2>
+                <form class="login-form">
+                    <div class="input-group">
+                        <input type="text" id="usernameInput" class="input-field" placeholder="Enter your name" required>
+                    </div>
+                    <button type="button" id="startBtn" class="btn btn-primary">
+                        Start Experience <i class="fas fa-arrow-right btn-icon"></i>
+                    </button>
+                </form>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-brain feature-icon"></i>
+                        <p class="feature-text">Advanced AI</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-comments feature-icon"></i>
+                        <p class="feature-text">Natural Dialogue</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-film feature-icon"></i>
+                        <p class="feature-text">Movie Knowledge</p>
                     </div>
                 </div>
             </div>
 
-            <div class="status">
-                <span class="microphone-indicator" id="micIndicator"></span>
-                <span id="statusText">Ready to start conversation</span>
-            </div>
-
-            <div class="call-controls">
-                <div class="control-btn" id="muteBtn" title="Mute/Unmute">
-                    <i class="fas fa-microphone"></i>
+            <!-- AI Interface -->
+            <div class="ai-interface" id="aiInterface">
+                <div class="ai-avatar-container">
+                    <div class="ai-avatar-outer">
+                        <div class="ai-avatar-mid">
+                            <div class="ai-avatar-inner">
+                                <div class="water-effect"></div>
+                                <div class="alien-effect" id="alienEffect"></div>
+                                <div class="ai-core">
+                                    <i class="fas fa-microchip ai-icon"></i>
+                                    <div class="ai-glow" id="aiGlow"></div>
+                                </div>
+                                <div class="audio-waves" id="audioWaves">
+                                    <div class="wave-bar" style="--i: 1"></div>
+                                    <div class="wave-bar" style="--i: 2"></div>
+                                    <div class="wave-bar" style="--i: 3"></div>
+                                    <div class="wave-bar" style="--i: 4"></div>
+                                    <div class="wave-bar" style="--i: 5"></div>
+                                    <div class="wave-bar" style="--i: 6"></div>
+                                    <div class="wave-bar" style="--i: 7"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="control-btn end-call" id="endCallBtn" title="End Call">
-                    <i class="fas fa-phone-slash"></i>
+
+                <div class="controls-section">
+                    <div class="status-indicator">
+                        <div class="mic-status" id="micStatus"></div>
+                        <span class="status-text" id="statusText">Ready to begin</span>
+                    </div>
+
+                    <div class="control-buttons">
+                        <div class="control-btn mute-btn" id="muteBtn" title="Mute/Unmute">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div class="control-btn" id="themeBtn" title="Switch Theme">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div class="control-btn end-btn" id="endBtn" title="End Session">
+                            <i class="fas fa-phone-slash"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversation-section">
+                    <div class="conversation-header">
+                        <div class="conversation-title">
+                            <i class="fas fa-comments"></i> Conversation
+                        </div>
+                        <div class="conversation-actions">
+                            <button class="action-btn" title="Clear">
+                                <i class="fas fa-broom"></i>
+                            </button>
+                            <button class="action-btn" title="Save">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="conversation-content" id="conversationContent">
+                        <!-- Messages will appear here -->
+                    </div>
                 </div>
             </div>
-
-            <div class="conversation" id="conversation">
-                <!-- Messages will be added here dynamically -->
-            </div>
-        </div>
+        </main>
     </div>
 
     <div class="notification" id="notification">
-        Notification message
+        <i class="fas fa-info-circle"></i>
+        <span id="notificationText">Notification message</span>
     </div>
 
     <script>
-        // Create stars background
-        function createStars() {
-            const starsContainer = document.querySelector('.stars');
-            const starCount = 150;
-
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-
-                // Random position
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-
-                // Random size
-                const size = Math.random() * 2;
-
-                // Random opacity and duration for twinkling
-                const opacity = Math.random() * 0.8 + 0.2;
-                const duration = Math.random() * 5 + 3;
-
-                star.style.left = `${x}%`;
-                star.style.top = `${y}%`;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.setProperty('--opacity', opacity);
-                star.style.setProperty('--duration', `${duration}s`);
-
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // DOM elements
-        const loginContainer = document.getElementById('loginContainer');
-        const callContainer = document.getElementById('callContainer');
+        // ---------- DOM Elements ----------
+        const introAnimation = document.getElementById('introAnimation');
+        const starsBackground = document.getElementById('starsBackground');
+        const daytimeBackground = document.getElementById('daytimeBackground');
+        const loginScreen = document.getElementById('loginScreen');
+        const aiInterface = document.getElementById('aiInterface');
         const usernameInput = document.getElementById('usernameInput');
-        const startCallBtn = document.getElementById('startCallBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
+        const startBtn = document.getElementById('startBtn');
         const muteBtn = document.getElementById('muteBtn');
-        const waveContainer = document.getElementById('waveContainer');
-        const conversation = document.getElementById('conversation');
+        const endBtn = document.getElementById('endBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const conversationContent = document.getElementById('conversationContent');
         const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
         const statusText = document.getElementById('statusText');
-        const micIndicator = document.getElementById('micIndicator');
+        const micStatus = document.getElementById('micStatus');
+        const aiGlow = document.getElementById('aiGlow');
+        const audioWaves = document.getElementById('audioWaves');
+        const alienEffect = document.getElementById('alienEffect');
 
-        // Global variables
+        // ---------- Global Variables ----------
         let username = '';
         let audioContext;
         let mediaRecorder;
@@ -579,20 +1073,151 @@
         let silenceDetectionInterval = null;
         let audioAnalyser = null;
         let audioDataArray = null;
+        let isNightTheme = true;
+        let alienParticles = [];
 
-        // Initialize the app
-        createStars();
+        // ---------- Initialization Functions ----------
+        function initializeApp() {
+            // Show intro animation
+            playIntroAnimation();
 
-        // Event listeners
-        startCallBtn.addEventListener('click', startCall);
-        endCallBtn.addEventListener('click', endCall);
-        muteBtn.addEventListener('click', toggleMute);
+            // Create background elements
+            createStars();
+            createClouds();
 
-        // Functions
-        function startCall() {
+            // Initialize event listeners
+            initEventListeners();
+        }
+
+        function playIntroAnimation() {
+            setTimeout(() => {
+                introAnimation.style.opacity = '0';
+                setTimeout(() => {
+                    introAnimation.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+
+        function createStars() {
+            const starCount = 200;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+
+                // Random size
+                const size = Math.random() * 2 + 1;
+
+                // Random opacity and duration
+                const opacity = Math.random() * 0.8 + 0.2;
+                const duration = Math.random() * 5 + 3;
+
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--opacity', opacity);
+                star.style.setProperty('--duration', `${duration}s`);
+
+                starsBackground.appendChild(star);
+            }
+        }
+
+        function createClouds() {
+            const cloudCount = 10;
+
+            for (let i = 0; i < cloudCount; i++) {
+                const cloud = document.createElement('div');
+                cloud.classList.add('cloud');
+
+                // Random size
+                const width = Math.random() * 200 + 100;
+                const height = width * 0.6;
+
+                // Random position
+                const y = Math.random() * 70 + 5;
+
+                // Random duration and blur
+                const duration = Math.random() * 60 + 60;
+                const blur = Math.random() * 10 + 10;
+
+                cloud.style.setProperty('--width', `${width}px`);
+                cloud.style.setProperty('--height', `${height}px`);
+                cloud.style.top = `${y}%`;
+                cloud.style.setProperty('--blur', `${blur}px`);
+                cloud.style.setProperty('--duration', `${duration}s`);
+                cloud.style.animationDelay = `-${Math.random() * 60}s`;
+
+                daytimeBackground.appendChild(cloud);
+            }
+        }
+
+        function createAlienEffect() {
+            // Clear previous particles
+            alienEffect.innerHTML = '';
+            alienParticles = [];
+
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('alien-particle');
+
+                // Random size
+                const size = Math.random() * 6 + 2;
+
+                // Random position (in circular formation)
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 30 + 50;
+                const x = 50 + Math.cos(angle) * 10;
+                const y = 50 + Math.sin(angle) * 10;
+
+                // Random animation duration and delay
+                const duration = Math.random() * 2 + 1;
+                const delay = Math.random() * 0.5;
+
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                particle.style.setProperty('--size', `${size}px`);
+                particle.style.setProperty('--distance', `${distance}px`);
+                particle.style.setProperty('--duration', `${duration}s`);
+                particle.style.setProperty('--delay', `${delay}s`);
+
+                alienEffect.appendChild(particle);
+                alienParticles.push(particle);
+            }
+        }
+
+        function initEventListeners() {
+            startBtn.addEventListener('click', handleStart);
+            endBtn.addEventListener('click', endSession);
+            muteBtn.addEventListener('click', toggleMute);
+            themeBtn.addEventListener('click', toggleTheme);
+
+            // Adding keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Space to toggle mute
+                if (e.code === 'Space' && aiInterface.style.display === 'flex') {
+                    e.preventDefault();
+                    toggleMute();
+                }
+                // Escape to end call
+                if (e.code === 'Escape' && aiInterface.style.display === 'flex') {
+                    endSession();
+                }
+            });
+        }
+
+        // ---------- Core Functionality ----------
+        function handleStart() {
             username = usernameInput.value.trim();
             if (!username) {
                 showNotification('Please enter your name', true);
+                usernameInput.focus();
                 return;
             }
 
@@ -600,43 +1225,46 @@
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     setupAudioProcessing(stream);
-
-                    // Start the session with the server
-                    fetch('https://corvo-ai-back-end.hf.space/api/start-session', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ username }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Switch to call view
-                            loginContainer.style.display = 'none';
-                            callContainer.style.display = 'flex';
-
-                            // Add initial AI message
-                            addMessage('AI Assistant', data.ai_response, 'ai');
-
-                            // Play the AI response
-                            playAudioFromBase64(data.audio);
-
-                            // Start listening after AI finishes speaking
-                            startListening();
-                        } else {
-                            showNotification(data.error || 'Failed to start session', true);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error starting session:', error);
-                        showNotification('Failed to connect to server', true);
-                    });
+                    startSession();
                 })
                 .catch(error => {
                     console.error('Error accessing microphone:', error);
-                    showNotification('Microphone access denied', true);
+                    showNotification('Microphone access denied. Please enable it in your browser settings.', true);
                 });
+        }
+
+        function startSession() {
+            // Switch UI
+            loginScreen.style.display = 'none';
+            aiInterface.style.display = 'flex';
+
+            // Create alien effects
+            createAlienEffect();
+
+            // Make initial API call to start session
+            fetch('https://corvo-ai-back-end.hf.space/api/start-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add initial AI message
+                    addMessage('RINET-23FX', data.ai_response, 'ai');
+
+                    // Play the AI response
+                    playAudioFromBase64(data.audio);
+                } else {
+                    showNotification(data.error || 'Failed to start session', true);
+                }
+            })
+            .catch(error => {
+                console.error('Error starting session:', error);
+                showNotification('Failed to connect to server. Please try again.', true);
+            });
         }
 
         function setupAudioProcessing(stream) {
@@ -671,7 +1299,9 @@
             isRecording = true;
             audioChunks = [];
             statusText.textContent = 'Listening...';
-            micIndicator.classList.add('active');
+            micStatus.classList.add('active');
+            aiGlow.classList.add('active');
+            alienEffect.classList.add('active');
 
             // Start recording
             mediaRecorder.start();
@@ -685,7 +1315,9 @@
 
             isRecording = false;
             statusText.textContent = 'Processing...';
-            micIndicator.classList.remove('active');
+            micStatus.classList.remove('active');
+            aiGlow.classList.remove('active');
+            alienEffect.classList.remove('active');
 
             // Clear silence detection
             clearInterval(silenceDetectionInterval);
@@ -708,9 +1340,9 @@
             // If sound is detected, reset the silence timeout
             if (average > 10) {
                 clearTimeout(silenceTimeout);
-                silenceTimeout = setTimeout(stopListening, 2000); // Stop after 2 seconds of silence
+                silenceTimeout = setTimeout(stopListening, 1800); // Stop after 1.8 seconds of silence
             } else if (!silenceTimeout) {
-                silenceTimeout = setTimeout(stopListening, 2000);
+                silenceTimeout = setTimeout(stopListening, 1800);
             }
         }
 
@@ -729,7 +1361,7 @@
                     addMessage(username, data.transcription, 'user');
 
                     // Add AI response
-                    addMessage('AI Assistant', data.ai_response, 'ai');
+                    addMessage('RINET-23FX', data.ai_response, 'ai');
 
                     // Play the AI response
                     playAudioFromBase64(data.audio);
@@ -740,34 +1372,8 @@
             })
             .catch(error => {
                 console.error('Error sending audio:', error);
-                showNotification('Failed to send audio to server', true);
+                showNotification('Failed to reach server. Please check your connection.', true);
                 startListening(); // Resume listening
-            });
-        }
-
-        function sendTextToServer(text) {
-            fetch('https://corvo-ai-back-end.hf.space/api/send-text', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Add AI response
-                    addMessage('AI Assistant', data.ai_response, 'ai');
-
-                    // Play the AI response
-                    playAudioFromBase64(data.audio);
-                } else {
-                    showNotification(data.error || 'Failed to process text', true);
-                }
-            })
-            .catch(error => {
-                console.error('Error sending text:', error);
-                showNotification('Failed to send text to server', true);
             });
         }
 
@@ -784,9 +1390,10 @@
                 currentAudio = null;
             }
 
-            // Show audio waves
-            waveContainer.classList.add('active');
-            statusText.textContent = 'AI is speaking...';
+            // Show audio waves and update status
+            audioWaves.classList.add('active');
+            statusText.textContent = 'RINET is speaking...';
+            aiGlow.classList.add('active');
 
             // Convert base64 to blob
             const byteCharacters = atob(base64Audio);
@@ -806,7 +1413,8 @@
 
             // Listen for audio end
             audio.onended = () => {
-                waveContainer.classList.remove('active');
+                audioWaves.classList.remove('active');
+                aiGlow.classList.remove('active');
                 startListening();
             };
 
@@ -819,7 +1427,8 @@
                 // Stop the AI from speaking
                 currentAudio.pause();
                 currentAudio = null;
-                waveContainer.classList.remove('active');
+                audioWaves.classList.remove('active');
+                aiGlow.classList.remove('active');
 
                 // Notify the server about the interruption
                 fetch('https://corvo-ai-back-end.hf.space/api/interrupt', {
@@ -843,49 +1452,82 @@
         }
 
         function addMessage(sender, content, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.classList.add(type === 'user' ? 'user-message' : 'ai-message');
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('message', `${type}-message`);
 
-            const headerDiv = document.createElement('div');
-            headerDiv.classList.add('message-header');
-            headerDiv.textContent = sender;
+            const headerEl = document.createElement('div');
+            headerEl.classList.add('message-header');
 
-            const contentDiv = document.createElement('div');
-            contentDiv.classList.add('message-content');
-            contentDiv.textContent = content;
+            const avatarEl = document.createElement('div');
+            avatarEl.classList.add('message-avatar');
+            avatarEl.textContent = sender.charAt(0).toUpperCase();
 
-            messageDiv.appendChild(headerDiv);
-            messageDiv.appendChild(contentDiv);
+            const senderNameEl = document.createElement('span');
+            senderNameEl.textContent = sender;
 
-            conversation.appendChild(messageDiv);
-            conversation.scrollTop = conversation.scrollHeight;
+            headerEl.appendChild(avatarEl);
+            headerEl.appendChild(senderNameEl);
+
+            const contentEl = document.createElement('div');
+            contentEl.classList.add('message-content');
+            contentEl.textContent = content;
+
+            messageEl.appendChild(headerEl);
+            messageEl.appendChild(contentEl);
+
+            conversationContent.appendChild(messageEl);
+            conversationContent.scrollTop = conversationContent.scrollHeight;
+
+            // Trigger entry animation
+            setTimeout(() => {
+                messageEl.style.opacity = '1';
+                messageEl.style.transform = 'translateY(0)';
+            }, 10);
         }
 
         function toggleMute() {
             isMuted = !isMuted;
 
             if (isMuted) {
-                muteBtn.querySelector('i').classList.remove('fa-microphone');
-                muteBtn.querySelector('i').classList.add('fa-microphone-slash');
-                muteBtn.classList.add('mute');
+                muteBtn.classList.add('active');
+                muteBtn.querySelector('i').className = 'fas fa-microphone-slash';
 
                 if (isRecording) {
                     stopListening();
                 }
 
                 statusText.textContent = 'Microphone muted';
-                micIndicator.classList.remove('active');
+                micStatus.classList.remove('active');
+                showNotification('Microphone muted');
             } else {
-                muteBtn.querySelector('i').classList.remove('fa-microphone-slash');
-                muteBtn.querySelector('i').classList.add('fa-microphone');
-                muteBtn.classList.remove('mute');
+                muteBtn.classList.remove('active');
+                muteBtn.querySelector('i').className = 'fas fa-microphone';
 
-                startListening();
+                if (!currentAudio || currentAudio.paused) {
+                    startListening();
+                }
+
+                showNotification('Microphone active');
             }
         }
 
-        function endCall() {
+        function toggleTheme() {
+            isNightTheme = !isNightTheme;
+
+            if (isNightTheme) {
+                starsBackground.style.opacity = '1';
+                daytimeBackground.style.opacity = '0';
+                themeBtn.querySelector('i').className = 'fas fa-moon';
+                document.body.style.backgroundColor = 'var(--bg-darker)';
+            } else {
+                starsBackground.style.opacity = '0';
+                daytimeBackground.style.opacity = '1';
+                themeBtn.querySelector('i').className = 'fas fa-sun';
+                document.body.style.backgroundColor = '#192f6a';
+            }
+        }
+
+        function endSession() {
             // Stop recording if active
             if (isRecording) {
                 mediaRecorder.stop();
@@ -912,40 +1554,52 @@
             })
             .then(() => {
                 // Switch back to login view
-                callContainer.style.display = 'none';
-                loginContainer.style.display = 'block';
+                aiInterface.style.display = 'none';
+                loginScreen.style.display = 'block';
 
                 // Reset UI
-                conversation.innerHTML = '';
-                waveContainer.classList.remove('active');
-                statusText.textContent = 'Ready to start conversation';
-                micIndicator.classList.remove('active');
+                conversationContent.innerHTML = '';
+                audioWaves.classList.remove('active');
+                aiGlow.classList.remove('active');
+                alienEffect.classList.remove('active');
+                statusText.textContent = 'Ready to begin';
+                micStatus.classList.remove('active');
 
                 // Reset variables
                 username = '';
                 usernameInput.value = '';
                 isMuted = false;
-                muteBtn.querySelector('i').classList.remove('fa-microphone-slash');
-                muteBtn.querySelector('i').classList.add('fa-microphone');
-                muteBtn.classList.remove('mute');
+                muteBtn.classList.remove('active');
+                muteBtn.querySelector('i').className = 'fas fa-microphone';
 
-                showNotification('Call ended');
+                showNotification('Session ended');
             })
             .catch(error => {
                 console.error('Error ending session:', error);
-                showNotification('Failed to end session properly', true);
+                showNotification('Failed to properly end session', true);
             });
         }
 
         function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.classList.toggle('error', isError);
+            notificationText.textContent = message;
+            notification.className = 'notification';
+
+            if (isError) {
+                notification.classList.add('error');
+                notification.querySelector('i').className = 'fas fa-exclamation-circle';
+            } else {
+                notification.querySelector('i').className = 'fas fa-check-circle';
+            }
+
             notification.classList.add('show');
 
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
