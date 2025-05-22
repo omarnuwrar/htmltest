@@ -1,0 +1,1162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>RINET AI - Interactive Chat</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="https://fonts.googleapis.com/css2?family=Gugi&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        .sky-background {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        /* From Uiverse.io by JustCode14 */
+        /* Theme Switch */
+        .switch {
+            font-size: 17px;
+            position: relative;
+            display: inline-block;
+            width: 4em;
+            height: 2.2em;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2a2a2a;
+            transition: 0.4s;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 1.2em;
+            width: 1.2em;
+            border-radius: 20px;
+            left: 0.5em;
+            bottom: 0.5em;
+            transition: 0.4s;
+            transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+            box-shadow: inset 8px -4px 0px 0px #fff;
+        }
+
+        .switch input:checked + .slider {
+            background-color: #00a6ff;
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(1.8em);
+            box-shadow: inset 15px -4px 0px 15px #ffcf48;
+        }
+
+        .star {
+            background-color: #fff;
+            border-radius: 50%;
+            position: absolute;
+            width: 5px;
+            transition: all 0.4s;
+            height: 5px;
+        }
+
+        .star_1 {
+            left: 2.5em;
+            top: 0.5em;
+        }
+
+        .star_2 {
+            left: 2.2em;
+            top: 1.2em;
+        }
+
+        .star_3 {
+            left: 3em;
+            top: 0.9em;
+        }
+
+        .switch input:checked ~ .slider .star {
+            opacity: 0;
+        }
+
+        .cloud {
+            width: 3.5em;
+            position: absolute;
+            bottom: -1.4em;
+            left: -1.1em;
+            opacity: 0;
+            transition: all 0.4s;
+        }
+
+        .switch input:checked ~ .slider .cloud {
+            opacity: 1;
+        }
+
+        /* RINET AI Animation Styling */
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .animation-container {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            position: relative;
+            transform: scale(1.2);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.5s, glitch 5s infinite 2s;
+            transition: filter 0.5s ease;
+        }
+
+        .text-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .text {
+            font-family: 'Gugi', cursive;
+            font-size: 70px;
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 4px solid #0070cc;
+            width: 0;
+            animation: typing 2s steps(8) 1s forwards, blink-caret 0.75s step-end infinite;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+        }
+
+        .glitch-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            animation: glitchText 4s infinite 3s;
+            transition: text-shadow 0.5s ease;
+        }
+
+        body.day-mode .text {
+            color: #4B3F2F; /* deep warm brown */
+            text-shadow: 0 0 5px rgba(139, 120, 100, 0.3); /* soft natural glow */
+        }
+
+        body.night-mode .text {
+            color: #C8B8A6; /* soft beige like warm candlelight */
+            text-shadow: 0 0 8px rgba(200, 184, 166, 0.2); /* dim ambient shadow */
+        }
+
+        body.night-mode .logo {
+            filter: drop-shadow(0 0 6px rgba(200, 184, 166, 0.3)); /* subtle beige glow */
+        }
+
+        /* Help Screen Styling */
+        .help-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .help-screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .center-logo {
+            width: 180px;
+            height: auto;
+            margin-bottom: 30px;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        .help-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        body.day-mode .help-text {
+            color: #4B3F2F;
+        }
+
+        body.night-mode .help-text {
+            color: #C8B8A6;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(0, 112, 204, 0.3));
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(0, 112, 204, 0.6));
+            }
+        }
+
+        body.night-mode .center-logo {
+            animation: pulseGlowNight 3s infinite alternate;
+        }
+
+        @keyframes pulseGlowNight {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(0, 166, 255, 0.3));
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(0, 166, 255, 0.6));
+            }
+        }
+
+        /* Chat Interface Styling */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 3;
+        }
+
+        .chat-container.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .messages-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Day mode chat styling */
+        body.day-mode .messages-container {
+            color: #4B3F2F;
+        }
+
+        body.day-mode .chat-message p {
+            color: #4B3F2F;
+        }
+
+        body.day-mode .thinking-text {
+            color: #6B5B4B;
+        }
+
+        body.day-mode .input-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(75, 63, 47, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.day-mode .message-input {
+            color: #4B3F2F;
+        }
+
+        body.day-mode .message-input::placeholder {
+            color: rgba(75, 63, 47, 0.5);
+        }
+
+        body.day-mode .send-btn {
+            color: #0070cc;
+        }
+
+        body.day-mode .send-btn:hover {
+            color: #0056a4;
+        }
+
+        body.day-mode .attachment-btn {
+            color: rgba(75, 63, 47, 0.6);
+        }
+
+        body.day-mode .attachment-btn:hover {
+            color: rgba(75, 63, 47, 0.9);
+        }
+
+        /* Night mode chat styling */
+        body.night-mode .messages-container {
+            color: #C8B8A6;
+        }
+
+        body.night-mode .chat-message p {
+            color: #C8B8A6;
+        }
+
+        body.night-mode .thinking-text {
+            color: #A89886;
+        }
+
+        body.night-mode .input-container {
+            background-color: rgba(10, 14, 23, 0.6);
+            border: 1px solid rgba(200, 184, 166, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        body.night-mode .message-input {
+            color: #C8B8A6;
+        }
+
+        body.night-mode .message-input::placeholder {
+            color: rgba(200, 184, 166, 0.5);
+        }
+
+        body.night-mode .send-btn {
+            color: #00a6ff;
+        }
+
+        body.night-mode .send-btn:hover {
+            color: #0088d1;
+        }
+
+        body.night-mode .attachment-btn {
+            color: rgba(200, 184, 166, 0.6);
+        }
+
+        body.night-mode .attachment-btn:hover {
+            color: rgba(200, 184, 166, 0.9);
+        }
+
+        .input-container {
+            margin: 0 20px 20px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            z-index: 20;
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-input {
+            width: 100%;
+            min-height: 60px;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+        }
+
+        .attachment-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .attachment-btn, .send-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .attachment-btn {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .attachment-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Chat message styling */
+        .chat-message {
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease forwards;
+            max-width: 90%;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+            background-color: rgba(0, 112, 204, 0.1);
+            padding: 15px 20px;
+            border-radius: 18px 18px 0 18px;
+        }
+
+        body.night-mode .user-message {
+            background-color: rgba(0, 166, 255, 0.1);
+        }
+
+        .ai-message {
+            margin-right: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ai-logo {
+            width: 36px;
+            height: 36px;
+            margin-right: 10px;
+        }
+
+        .ai-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .ai-message p {
+            background-color: rgba(75, 63, 47, 0.1);
+            padding: 15px 20px;
+            border-radius: 0 18px 18px 18px;
+        }
+
+        body.night-mode .ai-message p {
+            background-color: rgba(200, 184, 166, 0.1);
+        }
+
+        .thinking {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .thinking-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 12px;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .thinking-text {
+            font-size: 16px;
+        }
+
+        /* RTL Support */
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Animations */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #0070cc }
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+            1% {
+                transform: translate(-2px, 1px);
+                filter: brightness(1.1);
+            }
+            2% {
+                transform: translate(2px, -1px);
+            }
+            3% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(0);
+            }
+            21% {
+                transform: translate(3px, 1px);
+                filter: brightness(1.2);
+            }
+            22% {
+                transform: translate(0);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        @keyframes glitchText {
+            0% {
+                opacity: 0;
+                transform: translate(0);
+                text-shadow: none;
+            }
+            1% {
+                opacity: 1;
+                transform: translate(-2px, 1px);
+                text-shadow: -1px 0 red, 1px 0 blue;
+            }
+            2% {
+                transform: translate(2px, -1px);
+                text-shadow: 1px 0 red, -1px 0 blue;
+            }
+            3% {
+                opacity: 0;
+                transform: translate(0);
+                text-shadow: none;
+            }
+            20% {
+                opacity: 0;
+                transform: translate(0);
+                text-shadow: none;
+            }
+            21% {
+                opacity: 1;
+                transform: translate(3px, 1px);
+                text-shadow: 2px 0 green, -2px 0 yellow;
+            }
+            22% {
+                opacity: 0;
+                transform: translate(0);
+                text-shadow: none;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(0);
+                text-shadow: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 20px;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        body.day-mode .typing-cursor {
+            background-color: #4B3F2F;
+        }
+
+        body.night-mode .typing-cursor {
+            background-color: #C8B8A6;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .animation-container {
+                flex-direction: column;
+                gap: 20px;
+                transform: scale(1);
+            }
+
+            .text {
+                font-size: 50px;
+            }
+
+            .logo {
+                width: 120px;
+            }
+
+            .center-logo {
+                width: 140px;
+            }
+
+            .help-text {
+                font-size: 20px;
+                padding: 0 20px;
+            }
+
+            .input-container {
+                margin: 0 10px 10px 10px;
+            }
+
+            .chat-message {
+                font-size: 16px;
+                max-width: 95%;
+            }
+
+            .ai-logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .ai-name {
+                font-size: 16px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        body.day-mode ::-webkit-scrollbar-thumb {
+            background: rgba(75, 63, 47, 0.3);
+            border-radius: 3px;
+        }
+
+        body.day-mode ::-webkit-scrollbar-thumb:hover {
+            background: rgba(75, 63, 47, 0.5);
+        }
+
+        body.night-mode ::-webkit-scrollbar-thumb {
+            background: rgba(200, 184, 166, 0.3);
+            border-radius: 3px;
+        }
+
+        body.night-mode ::-webkit-scrollbar-thumb:hover {
+            background: rgba(200, 184, 166, 0.5);
+        }
+    </style>
+</head>
+
+<body class="day-mode">
+    <div id="sky-background" class="sky-background"></div>
+
+    <div class="toggle-container">
+        <label class="switch">
+            <input checked="true" id="themeToggle" type="checkbox" />
+            <span class="slider">
+                <div class="star star_1"></div>
+                <div class="star star_2"></div>
+                <div class="star star_3"></div>
+                <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+                    <path
+                        transform="matrix(.77976 0 0 .78395-299.99-418.63)"
+                        fill="#fff"
+                        d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+                    ></path>
+                </svg>
+            </span>
+        </label>
+    </div>
+
+    <!-- Initial Animation Content -->
+    <div id="animation-content" class="content">
+        <div id="animation-container" class="animation-container">
+            <img src="logo.png" alt="RINET AI Logo" class="logo">
+            <div class="text-container">
+                <div class="text">RINET AI</div>
+                <div class="text glitch-effect">RINET AI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Screen (Logo + How can I help) -->
+    <div id="help-screen" class="help-screen">
+        <img src="logo.png" alt="RINET AI Logo" class="center-logo">
+        <div class="help-text">How can I help you today?</div>
+
+        <!-- Input for first message -->
+        <div class="input-container" style="width: 80%; max-width: 600px;">
+            <div class="input-area">
+                <textarea id="first-message-input" class="message-input" placeholder="Ask me anything..." rows="3"></textarea>
+                <div class="input-actions">
+                    <div class="attachment-buttons">
+                        <button class="attachment-btn" aria-label="Attach file">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </button>
+                        <button class="attachment-btn" aria-label="Attach web link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                                <path d="M2 12h20"></path>
+                            </svg>
+                        </button>
+                        <button class="attachment-btn" aria-label="Attach Figma link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z"></path>
+                                <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z"></path>
+                                <path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z"></path>
+                                <path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z"></path>
+                                <path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="first-send-btn" class="send-btn" aria-label="Send message">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 2L11 13"></path>
+                            <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chat-container" class="chat-container">
+        <div id="messages-container" class="messages-container">
+            <!-- Messages will be added here dynamically -->
+        </div>
+
+        <div class="input-container">
+            <div class="input-area">
+                <textarea id="message-input" class="message-input" placeholder="Ask me anything..." rows="3"></textarea>
+                <div class="input-actions">
+                    <div class="attachment-buttons">
+                        <button class="attachment-btn" aria-label="Attach file">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </button>
+                        <button class="attachment-btn" aria-label="Attach web link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 2a14.5 14.5 0 0 0 0 20a14.5 14.5 0 0 0 0-20"></path>
+                                <path d="M2 12h20"></path>
+                            </svg>
+                        </button>
+                        <button class="attachment-btn" aria-label="Attach Figma link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z"></path>
+                                <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z"></path>
+                                <path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z"></path>
+                                <path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z"></path>
+                                <path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="send-btn" class="send-btn" aria-label="Send message">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 2L11 13"></path>
+                            <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r92/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"></script>
+    <script>
+        // Day mode colors
+        const dayColors = {
+            skyColor: 0x5eb7d9,
+            cloudColor: 0xb1c2dc,
+            cloudShadowColor: 0x1b3a57,
+            sunColor: 0xff9c21,
+            sunGlareColor: 0xfa6331,
+            sunlightColor: 0xfa9531
+        };
+
+        // Night mode colors
+        const nightColors = {
+            skyColor: 0x0a0e17,
+            cloudColor: 0x1a2238,
+            cloudShadowColor: 0x000000,
+            sunColor: 0xcacaca,  // Moon color
+            sunGlareColor: 0x555555,
+            sunlightColor: 0x2d3652
+        };
+
+        // Initialize variables
+        let vantaEffect;
+        let isDayMode = true;
+        let firstMessageSent = false;
+
+        // Initialize the sky effect
+        function initSky() {
+            if (vantaEffect) {
+                vantaEffect.destroy();
+            }
+
+            const colors = isDayMode ? dayColors : nightColors;
+
+            vantaEffect = VANTA.CLOUDS({
+                el: "#sky-background",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                skyColor: colors.skyColor,
+                cloudColor: colors.cloudColor,
+                cloudShadowColor: colors.cloudShadowColor,
+                sunColor: colors.sunColor,
+                sunGlareColor: colors.sunGlareColor,
+                sunlightColor: colors.sunlightColor,
+                speed: isDayMode ? 1.0 : 0.8
+            });
+        }
+
+        // Toggle between day and night
+        function toggleTheme() {
+            isDayMode = !isDayMode;
+
+            // Update body class
+            if (isDayMode) {
+                document.body.classList.remove('night-mode');
+                document.body.classList.add('day-mode');
+            } else {
+                document.body.classList.remove('day-mode');
+                document.body.classList.add('night-mode');
+            }
+
+            // Reinitialize sky with new colors
+            initSky();
+
+            // Save preference
+            localStorage.setItem('isDayMode', isDayMode);
+        }
+
+        // Chat functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstMessageInput = document.getElementById('first-message-input');
+            const firstSendBtn = document.getElementById('first-send-btn');
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+            const messagesContainer = document.getElementById('messages-container');
+            const animationContent = document.getElementById('animation-content');
+            const helpScreen = document.getElementById('help-screen');
+            const chatContainer = document.getElementById('chat-container');
+
+            // Auto transition to help screen after intro animation
+            setTimeout(() => {
+                // Fade out the animation content
+                animationContent.style.animation = 'fadeOut 0.8s forwards';
+
+                // After animation completes, show help screen
+                setTimeout(() => {
+                    // Hide animation content
+                    animationContent.style.display = 'none';
+
+                    // Show help screen
+                    helpScreen.classList.add('active');
+
+                    // Focus on first message input
+                    firstMessageInput.focus();
+                }, 800);
+            }, 3500); // Wait for intro animations to complete
+
+            // Function to handle the first message
+            function sendFirstMessage() {
+                const message = firstMessageInput.value.trim();
+                if (message) {
+                    // Hide help screen
+                    helpScreen.style.animation = 'fadeOut 0.5s forwards';
+
+                    // After help screen fades out, show chat interface
+                    setTimeout(() => {
+                        // Hide help screen
+                        helpScreen.classList.remove('active');
+                        helpScreen.style.display = 'none';
+
+                        // Show chat container
+                        chatContainer.classList.add('active');
+
+                        // Add user message to chat
+                        addUserMessage(message);
+
+                        // Show thinking state
+                        showThinking();
+
+                        // Focus on chat input
+                        messageInput.focus();
+
+                        // Simulate AI response after a delay
+                        setTimeout(() => {
+                            // Detect if the message contains Arabic characters
+                            const containsArabic = /[\u0600-\u06FF]/.test(message);
+
+                            if (containsArabic) {
+                                addAIMessage("أهلاً، أنا هنا للمساعدة! كيف يمكنني مساعدتك اليوم؟", true);
+                            } else {
+                                addAIMessage("I'm RINET AI, and I'm here to help. What can I do for you today?");
+                            }
+                        }, 1500);
+
+                        firstMessageSent = true;
+                    }, 500);
+                }
+            }
+
+            // Function to add a user message
+            function addUserMessage(text) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'chat-message user-message';
+                messageEl.innerHTML = `<p>${text}</p>`;
+                messagesContainer.appendChild(messageEl);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Function to show the AI is thinking
+            function showThinking() {
+                const thinkingEl = document.createElement('div');
+                thinkingEl.id = 'thinking';
+                thinkingEl.className = 'thinking';
+                thinkingEl.innerHTML = `
+                    <img src="logo.png" alt="Thinking" class="thinking-logo">
+                    <span class="thinking-text">RINET AI is thinking...</span>
+                `;
+                messagesContainer.appendChild(thinkingEl);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Stream text character by character
+            function streamText(element, text, delay = 30, isArabic = false) {
+                return new Promise((resolve) => {
+                    let index = 0;
+
+                    // Create cursor element
+                    const cursor = document.createElement('span');
+                    cursor.className = 'typing-cursor';
+                    element.appendChild(cursor);
+
+                    const interval = setInterval(() => {
+                        if (index < text.length) {
+                            // Add next character
+                            element.insertBefore(
+                                document.createTextNode(text[index]),
+                                cursor
+                            );
+                            index++;
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        } else {
+                            clearInterval(interval);
+                            // Remove cursor after typing is complete
+                            cursor.remove();
+                            resolve();
+                        }
+                    }, delay);
+                });
+            }
+
+            // Function to add an AI message
+            function addAIMessage(text, isArabic = false) {
+                // Remove thinking indicator if present
+                const thinking = document.getElementById('thinking');
+                if (thinking) {
+                    thinking.remove();
+                }
+
+                const messageEl = document.createElement('div');
+                messageEl.className = 'chat-message ai-message';
+
+                const textClass = isArabic ? 'rtl' : '';
+
+                messageEl.innerHTML = `
+                    <div class="ai-header">
+                        <img src="logo.png" alt="AI" class="ai-logo">
+                        <span class="ai-name">RINET AI</span>
+                    </div>
+                    <p class="${textClass}" id="streaming-response-${Date.now()}"></p>
+                `;
+
+                messagesContainer.appendChild(messageEl);
+
+                // Get the element we'll stream text into
+                const streamingEl = messageEl.querySelector(`[id^="streaming-response-"]`);
+
+                // Stream the text
+                streamText(streamingEl, text, 30, isArabic);
+
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Handle sending a message in the main chat
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message) {
+                    // Add user message to chat
+                    addUserMessage(message);
+
+                    // Clear input
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+
+                    // Show thinking state
+                    showThinking();
+
+                    // Ensure input stays focused
+                    messageInput.focus();
+
+                    // Simulate AI response after a delay
+                    setTimeout(() => {
+                        // Detect if the message contains Arabic characters
+                        const containsArabic = /[\u0600-\u06FF]/.test(message);
+
+                        if (containsArabic) {
+                            addAIMessage("أهلاً، أنا هنا للمساعدة! كيف يمكنني مساعدتك اليوم؟", true);
+                        } else {
+                            addAIMessage("I'm RINET AI, and I'm here to help. What can I do for you today?");
+                        }
+                    }, 1500);
+                }
+            }
+
+            // Event listeners for first message
+            firstSendBtn.addEventListener('click', sendFirstMessage);
+
+            firstMessageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendFirstMessage();
+                }
+            });
+
+            // Auto-resize first message textarea
+            firstMessageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Event listeners for main chat
+            sendBtn.addEventListener('click', sendMessage);
+
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize main chat textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Ensure clicking anywhere in the chat container focuses the input
+            document.addEventListener('click', function(e) {
+                // Only focus if we're in the chat view and not clicking on a button
+                if (chatContainer.classList.contains('active') &&
+                    !e.target.closest('button') &&
+                    !e.target.closest('textarea')) {
+                    messageInput.focus();
+                }
+
+                // Focus on first message input if we're in the help screen
+                if (helpScreen.classList.contains('active') &&
+                    !e.target.closest('button') &&
+                    !e.target.closest('textarea')) {
+                    firstMessageInput.focus();
+                }
+            });
+
+            // When DOM loaded, check for saved theme preference
+            const savedMode = localStorage.getItem('isDayMode');
+            if (savedMode !== null) {
+                isDayMode = savedMode === 'true';
+
+                // Update UI to match saved preference
+                document.getElementById('themeToggle').checked = isDayMode;
+                if (!isDayMode) {
+                    document.body.classList.remove('day-mode');
+                    document.body.classList.add('night-mode');
+                }
+            }
+
+            // Initialize sky
+            initSky();
+
+            // Add event listener to toggle
+            document.getElementById('themeToggle').addEventListener('change', function(e) {
+                toggleTheme();
+            });
+        });
+    </script>
+</body>
+</html>
